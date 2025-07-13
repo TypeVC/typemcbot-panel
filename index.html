@@ -1,1 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TypePanelX - Final</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: linear-gradient(to right, #f9f9f9, #fff); padding: 40px; color: #111; }
+    .panel { max-width: 900px; margin: auto; background: #fff; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); padding: 30px; margin-top: 40px; }
+    h2 { margin-bottom: 20px; color: #2c3e50; }
+    label { margin-top: 12px; font-weight: 500; display: block; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+    button { background: #3498db; color: white; font-weight: bold; cursor: pointer; margin-top: 14px; transition: 0.3s; }
+    button:hover { background: #2980b9; }
+    .switch-link { margin-top: 10px; background: none; border: none; color: #2980b9; cursor: pointer; text-decoration: underline; font-size: 14px; }
+    .hidden { display: none; }
+    .card { background: #f4f4f4; padding: 16px; border-left: 4px solid #3498db; margin-top: 14px; border-radius: 6px; }
+    .slider-group { margin-top: 10px; }
+    .logout-btn { background: #e74c3c; margin-top: 20px; }
+    .slider-label { display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
 
+  <!-- Login Panel -->
+  <div class="panel" id="loginPanel">
+    <h2>Login</h2>
+    <label>Username</label>
+    <input id="loginUser" type="text" />
+    <label>Password</label>
+    <input id="loginPass" type="password" />
+    <button onclick="loginUser()">Login</button>
+    <button class="switch-link" onclick="switchTo('register')">New user? Register</button>
+    <p id="loginMsg" style="color:red; margin-top:10px;"></p>
+  </div>
+
+  <!-- Register Panel -->
+  <div class="panel hidden" id="registerPanel">
+    <h2>Register</h2>
+    <label>Username</label>
+    <input id="regUser" type="text" />
+    <label>Email</label>
+    <input id="regEmail" type="email" />
+    <label>Password</label>
+    <input id="regPass" type="password" />
+    <button onclick="registerUser()">Register</button>
+    <button class="switch-link" onclick="switchTo('login')">Already have account? Login</button>
+  </div>
+
+  <!-- User Panel -->
+  <div class="panel hidden" id="userPanel">
+    <h2>Welcome, <span id="userWelcome"></span></h2>
+    <div class="card" id="userInfo"></div>
+    <button onclick="runBot()">Run Bot</button>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <!-- Admin Panel -->
+  <div class="panel hidden" id="adminPanel">
+    <h2>Admin Panel</h2>
+    <div id="adminUsers"></div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+<script>
+const qs = id => document.getElementById(id);
+
+const users = [
+  { username: 'admin', email: 'admin@x.com', password: 'admin786', isAdmin: true }
+];
+
+function switchTo(view) {
+  ['loginPanel', 'registerPanel', 'userPanel', 'adminPanel'].forEach(id => qs(id).classList.add('hidden'));
+  qs(view + 'Panel').classList.remove('hidden');
+}
+
+function registerUser() {
+  const u = qs('regUser').value.trim();
+  const e = qs('regEmail').value.trim();
+  const p = qs('regPass').value.trim();
+  if (!u || !e || !p) return alert("Fill all fields");
+  if (users.find(user => user.username === u)) return alert("Username exists");
+  users.push({ username: u, email: e, password: p });
+  localStorage.setItem("loggedUser", u);
+  loadPanel(users.find(x => x.username === u));
+}
+
+function loginUser() {
+  const u = qs('loginUser').value.trim();
+  const p = qs('loginPass').value.trim();
+  const user = users.find(x => x.username === u && x.password === p);
+  if (!user) return qs('loginMsg').innerText = "Invalid username or password";
+  localStorage.setItem("loggedUser", u);
+  loadPanel(user);
+}
+
+function loadPanel(user) {
+  if (user.isAdmin) {
+    updateAdmin();
+    switchTo('admin');
+  } else {
+    qs('userWelcome').innerText = user.username;
+    updateUser(user);
+    switchTo('user');
+  }
+}
+
+function updateUser(user) {
+  qs('userInfo').innerHTML = `
+    <b>Username:</b> ${user.username}<br>
+    <b>Email:</b> ${user.email}<br>
+    <b>RAM:</b> ${user.ram || 'N/A'}<br>
+    <b>CPU:</b> ${user.cpu || 'N/A'}<br>
+    <b>GPU:</b> ${user.gpu || 'N/A'}
+  `;
+}
+
+function updateAdmin() {
+  const container = qs('adminUsers');
+  container.innerHTML = '';
+  users.filter(u => !u.isAdmin).forEach(u => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <b>${u.username}</b> (${u.email})<br>
+      <div class="slider-group">
+        <div class="slider-label"><span>CPU: ${u.cpu || '1 Core'}</span> <span><small>${u.cpuValue || 1} cores</small></span></div>
+        <input type="range" min="1" max="8" value="${u.cpuValue || 1}" oninput="assign('${u.username}', 'cpu', this.value + ' Cores', 'cpuValue', this.value)" />
+      </div>
+      <div class="slider-group">
+        <div class="slider-label"><span>RAM: ${u.ram || '512MB'}</span> <span><small>${u.ramValue || 512}MB</small></span></div>
+        <input type="range" min="512" max="32768" step="512" value="${u.ramValue || 512}" oninput="assign('${u.username}', 'ram', this.value + ' MB', 'ramValue', this.value)" />
+      </div>
+      <label>GPU:</label>
+      <select onchange="assign('${u.username}', 'gpu', this.value)">
+        <option ${u.gpu === 'None' ? 'selected' : ''}>None</option>
+        <option ${u.gpu === 'GTX 1050' ? 'selected' : ''}>GTX 1050</option>
+        <option ${u.gpu === 'RTX 2060' ? 'selected' : ''}>RTX 2060</option>
+        <option ${u.gpu === 'RTX 4090' ? 'selected' : ''}>RTX 4090</option>
+      </select>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function assign(username, key, val, extraKey, extraVal) {
+  const user = users.find(u => u.username === username);
+  if (user) {
+    user[key] = val;
+    if (extraKey) user[extraKey] = extraVal;
+    updateAdmin();
+  }
+}
+
+function runBot() {
+  alert("🟢 Bot is running... (simulated)");
+}
+
+function logout() {
+  localStorage.removeItem("loggedUser");
+  switchTo('login');
+}
+
+window.onload = () => {
+  const saved = localStorage.getItem("loggedUser");
+  const user = users.find(u => u.username === saved);
+  if (user) loadPanel(user);
+  else switchTo('login');
+};
+</script>
+
+</body>
+</html>
