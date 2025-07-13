@@ -1,0 +1,36 @@
+body {
+  background: #0d1117;
+  color: #ffffff;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 40px;
+  text-align: center;
+}
+
+.panel, .login-box {
+  background: #161b22;
+  padding: 30px;
+  border-radius: 10px;
+  margin: auto;
+  max-width: 600px;
+  box-shadow: 0 0 8px #000;
+}
+
+input, button {
+  padding: 10px;
+  margin: 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+button {
+  background-color: #238636;
+  color: white;
+  cursor: pointer;
+}
+
+nav a {
+  margin: 10px;
+  color: #58a6ff;
+  text-decoration: none;
+}
