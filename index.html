@@ -1,174 +1,136 @@
+<!-- CODE #9999999999 - TypePanelX Ultra Final V2 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TypePanelX - Final</title>
+  <title>TypePanelX</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-    body { background: linear-gradient(to right, #f9f9f9, #fff); padding: 40px; color: #111; }
-    .panel { max-width: 900px; margin: auto; background: #fff; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); padding: 30px; margin-top: 40px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+    body {
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .panel {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
     h2 { margin-bottom: 20px; color: #2c3e50; }
-    label { margin-top: 12px; font-weight: 500; display: block; }
-    input, select, button { width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
-    button { background: #3498db; color: white; font-weight: bold; cursor: pointer; margin-top: 14px; transition: 0.3s; }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      background: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
     button:hover { background: #2980b9; }
-    .switch-link { margin-top: 10px; background: none; border: none; color: #2980b9; cursor: pointer; text-decoration: underline; font-size: 14px; }
-    .hidden { display: none; }
-    .card { background: #f4f4f4; padding: 16px; border-left: 4px solid #3498db; margin-top: 14px; border-radius: 6px; }
-    .slider-group { margin-top: 10px; }
-    .logout-btn { background: #e74c3c; margin-top: 20px; }
-    .slider-label { display: flex; justify-content: space-between; }
+    .switch { margin-top: 10px; text-align: center; font-size: 14px; }
+    .admin, .user-panel { display: none; margin-top: 20px; }
+    .slider-label { margin-top: 20px; }
+    .slider-output { float: right; }
   </style>
 </head>
 <body>
+  <div class="panel">
+    <h2 id="form-title">Login</h2>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <div class="switch">
+      <span>Don't have an account? <button onclick="toggleForm()">Register</button></span>
+    </div>
 
-  <!-- Login Panel -->
-  <div class="panel" id="loginPanel">
-    <h2>Login</h2>
-    <label>Username</label>
-    <input id="loginUser" type="text" />
-    <label>Password</label>
-    <input id="loginPass" type="password" />
-    <button onclick="loginUser()">Login</button>
-    <button class="switch-link" onclick="switchTo('register')">New user? Register</button>
-    <p id="loginMsg" style="color:red; margin-top:10px;"></p>
-  </div>
-
-  <!-- Register Panel -->
-  <div class="panel hidden" id="registerPanel">
-    <h2>Register</h2>
-    <label>Username</label>
-    <input id="regUser" type="text" />
-    <label>Email</label>
-    <input id="regEmail" type="email" />
-    <label>Password</label>
-    <input id="regPass" type="password" />
-    <button onclick="registerUser()">Register</button>
-    <button class="switch-link" onclick="switchTo('login')">Already have account? Login</button>
-  </div>
-
-  <!-- User Panel -->
-  <div class="panel hidden" id="userPanel">
-    <h2>Welcome, <span id="userWelcome"></span></h2>
-    <div class="card" id="userInfo"></div>
-    <button onclick="runBot()">Run Bot</button>
-    <button class="logout-btn" onclick="logout()">Logout</button>
-  </div>
-
-  <!-- Admin Panel -->
-  <div class="panel hidden" id="adminPanel">
-    <h2>Admin Panel</h2>
-    <div id="adminUsers"></div>
-    <button class="logout-btn" onclick="logout()">Logout</button>
-  </div>
-
-<script>
-const qs = id => document.getElementById(id);
-
-const users = [
-  { username: 'admin', email: 'admin@x.com', password: 'admin786', isAdmin: true }
-];
-
-function switchTo(view) {
-  ['loginPanel', 'registerPanel', 'userPanel', 'adminPanel'].forEach(id => qs(id).classList.add('hidden'));
-  qs(view + 'Panel').classList.remove('hidden');
-}
-
-function registerUser() {
-  const u = qs('regUser').value.trim();
-  const e = qs('regEmail').value.trim();
-  const p = qs('regPass').value.trim();
-  if (!u || !e || !p) return alert("Fill all fields");
-  if (users.find(user => user.username === u)) return alert("Username exists");
-  users.push({ username: u, email: e, password: p });
-  localStorage.setItem("loggedUser", u);
-  loadPanel(users.find(x => x.username === u));
-}
-
-function loginUser() {
-  const u = qs('loginUser').value.trim();
-  const p = qs('loginPass').value.trim();
-  const user = users.find(x => x.username === u && x.password === p);
-  if (!user) return qs('loginMsg').innerText = "Invalid username or password";
-  localStorage.setItem("loggedUser", u);
-  loadPanel(user);
-}
-
-function loadPanel(user) {
-  if (user.isAdmin) {
-    updateAdmin();
-    switchTo('admin');
-  } else {
-    qs('userWelcome').innerText = user.username;
-    updateUser(user);
-    switchTo('user');
-  }
-}
-
-function updateUser(user) {
-  qs('userInfo').innerHTML = `
-    <b>Username:</b> ${user.username}<br>
-    <b>Email:</b> ${user.email}<br>
-    <b>RAM:</b> ${user.ram || 'N/A'}<br>
-    <b>CPU:</b> ${user.cpu || 'N/A'}<br>
-    <b>GPU:</b> ${user.gpu || 'N/A'}
-  `;
-}
-
-function updateAdmin() {
-  const container = qs('adminUsers');
-  container.innerHTML = '';
-  users.filter(u => !u.isAdmin).forEach(u => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <b>${u.username}</b> (${u.email})<br>
-      <div class="slider-group">
-        <div class="slider-label"><span>CPU: ${u.cpu || '1 Core'}</span> <span><small>${u.cpuValue || 1} cores</small></span></div>
-        <input type="range" min="1" max="8" value="${u.cpuValue || 1}" oninput="assign('${u.username}', 'cpu', this.value + ' Cores', 'cpuValue', this.value)" />
-      </div>
-      <div class="slider-group">
-        <div class="slider-label"><span>RAM: ${u.ram || '512MB'}</span> <span><small>${u.ramValue || 512}MB</small></span></div>
-        <input type="range" min="512" max="32768" step="512" value="${u.ramValue || 512}" oninput="assign('${u.username}', 'ram', this.value + ' MB', 'ramValue', this.value)" />
-      </div>
-      <label>GPU:</label>
-      <select onchange="assign('${u.username}', 'gpu', this.value)">
-        <option ${u.gpu === 'None' ? 'selected' : ''}>None</option>
-        <option ${u.gpu === 'GTX 1050' ? 'selected' : ''}>GTX 1050</option>
-        <option ${u.gpu === 'RTX 2060' ? 'selected' : ''}>RTX 2060</option>
-        <option ${u.gpu === 'RTX 4090' ? 'selected' : ''}>RTX 4090</option>
+    <div class="admin" id="admin-panel">
+      <h2>Admin Panel</h2>
+      <label class="slider-label">CPU: <span class="slider-output" id="cpu-output">1</span></label>
+      <input type="range" min="1" max="8" value="1" id="cpu" oninput="updateOutput('cpu')" />
+      
+      <label class="slider-label">RAM (GB): <span class="slider-output" id="ram-output">2</span></label>
+      <input type="range" min="1" max="32" value="2" id="ram" oninput="updateOutput('ram')" />
+      
+      <label class="slider-label">GPU: <span class="slider-output" id="gpu-output">None</span></label>
+      <select id="gpu" onchange="updateOutput('gpu')">
+        <option>None</option>
+        <option>GTX 1050</option>
+        <option>RTX 2060</option>
+        <option>RTX 4090</option>
       </select>
-    `;
-    container.appendChild(card);
-  });
-}
+    </div>
 
-function assign(username, key, val, extraKey, extraVal) {
-  const user = users.find(u => u.username === username);
-  if (user) {
-    user[key] = val;
-    if (extraKey) user[extraKey] = extraVal;
-    updateAdmin();
-  }
-}
+    <div class="user-panel" id="user-panel">
+      <h2>User Panel</h2>
+      <p>Welcome, <span id="user-display"></span></p>
+      <p>Status: <span id="bot-status">Idle</span></p>
+      <button onclick="runBot()">Run Bot</button>
+    </div>
+  </div>
 
-function runBot() {
-  alert("🟢 Bot is running... (simulated)");
-}
+  <script>
+    const users = [{ username: "admin", password: "admin123", isAdmin: true }];
+    let isLogin = true;
 
-function logout() {
-  localStorage.removeItem("loggedUser");
-  switchTo('login');
-}
+    function toggleForm() {
+      isLogin = !isLogin;
+      document.getElementById('form-title').innerText = isLogin ? "Login" : "Register";
+      document.querySelector('button[onclick="login()"]').innerText = isLogin ? "Login" : "Register";
+      document.querySelector('.switch span').innerHTML = isLogin ?
+        `Don't have an account? <button onclick="toggleForm()">Register</button>` :
+        `Already have an account? <button onclick="toggleForm()">Login</button>`;
+    }
 
-window.onload = () => {
-  const saved = localStorage.getItem("loggedUser");
-  const user = users.find(u => u.username === saved);
-  if (user) loadPanel(user);
-  else switchTo('login');
-};
-</script>
+    function login() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      if (!username || !password) return alert("Please fill all fields");
 
+      if (isLogin) {
+        const user = users.find(u => u.username === username && u.password === password);
+        if (!user) return alert("Invalid credentials");
+        document.getElementById('user-display').innerText = username;
+        if (user.isAdmin) {
+          document.getElementById('admin-panel').style.display = 'block';
+        } else {
+          document.getElementById('user-panel').style.display = 'block';
+        }
+        document.getElementById('form-title').innerText = "Dashboard";
+        document.querySelector('button[onclick="login()"]').style.display = 'none';
+        document.querySelector('.switch').style.display = 'none';
+        document.getElementById('username').style.display = 'none';
+        document.getElementById('password').style.display = 'none';
+      } else {
+        if (users.find(u => u.username === username)) return alert("User exists");
+        users.push({ username, password, isAdmin: false });
+        alert("Registered! Please login.");
+        toggleForm();
+      }
+    }
+
+    function runBot() {
+      document.getElementById('bot-status').innerText = "Running...";
+      setTimeout(() => {
+        document.getElementById('bot-status').innerText = "Idle";
+      }, 3000);
+    }
+
+    function updateOutput(id) {
+      const val = document.getElementById(id).value;
+      document.getElementById(`${id}-output`).innerText = val;
+    }
+  </script>
 </body>
 </html>
