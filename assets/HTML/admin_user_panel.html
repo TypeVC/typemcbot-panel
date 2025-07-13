@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TypeMCBot Admin/User Panel</title>
+  <style>
+    /* assets/css/style.css */
+    body {
+      background: #0d1117;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 30px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #161b22;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #000;
+    }
+    input, select, button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+    }
+    button {
+      background-color: #238636;
+      color: white;
+      cursor: pointer;
+    }
+    .slider-value {
+      float: right;
+    }
+    .section {
+      border: 1px solid #30363d;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 TypeMCBot Admin/User Control Panel</h1>
+
+    <!-- Login Section (assets/js/login.js + notify.js) -->
+    <div class="section">
+      <h3>🔐 User Login</h3>
+      <input type="text" id="username" placeholder="Enter username" />
+      <input type="password" id="password" placeholder="Enter password" />
+      <button onclick="login()">Login</button>
+      <p id="login-status"></p>
+    </div>
+
+    <!-- Admin Approval Panel -->
+    <div class="section" id="admin-panel" style="display:none;">
+      <h3>🛡️ Admin: Assign CPU/GPU & Permissions</h3>
+      <label>User: <span id="current-user"></span></label>
+
+      <label>RAM Limit (MB)</label>
+      <input type="range" min="512" max="8192" value="2048" id="ramRange" oninput="updateRAM()" />
+      <span class="slider-value" id="ramValue">2048MB</span>
+
+      <label>CPU Cores</label>
+      <select id="cpuSelect">
+        <option>1</option>
+        <option selected>2</option>
+        <option>4</option>
+        <option>8</option>
+      </select>
+
+      <label>GPU</label>
+      <select id="gpuSelect">
+        <option>❌ No GPU</option>
+        <option>NVIDIA GTX 1650</option>
+        <option>NVIDIA RTX 3060</option>
+        <option>NVIDIA RTX 4090</option>
+      </select>
+
+      <button onclick="approveUser()">✅ Approve Access</button>
+      <p id="access-status"></p>
+    </div>
+
+    <!-- User View Panel -->
+    <div class="section" id="user-panel" style="display:none;">
+      <h3>👤 User Resource View</h3>
+      <p>Welcome, <span id="uName"></span></p>
+      <ul>
+        <li>RAM: <span id="uRAM"></span></li>
+        <li>CPU: <span id="uCPU"></span></li>
+        <li>GPU: <span id="uGPU"></span></li>
+        <li>Status: <span id="uStatus">🔴 Not Approved</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // assets/js/notify.js + login.js + access.js (combined)
+    const users = {};
+    let currentUser = "";
+
+    function login() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+
+      if (!user || !pass) {
+        document.getElementById("login-status").innerText = "❌ Username or password missing.";
+        return;
+      }
+
+      currentUser = user;
+      document.getElementById("login-status").innerText = `🔔 Admin Notified: ${user} has logged in!`;
+
+      // Notify admin (simulated)
+      alert(`🚨 Admin Alert: ${user} just logged in.`);
+
+      // Show both panels
+      document.getElementById("admin-panel").style.display = "block";
+      document.getElementById("user-panel").style.display = "block";
+      document.getElementById("current-user").innerText = user;
+      document.getElementById("uName").innerText = user;
+
+      // If already approved
+      if (users[user]) {
+        setUserPanel(users[user]);
+      }
+    }
+
+    function updateRAM() {
+      const val = document.getElementById("ramRange").value;
+      document.getElementById("ramValue").innerText = val + "MB";
+    }
+
+    function approveUser() {
+      const ram = document.getElementById("ramRange").value;
+      const cpu = document.getElementById("cpuSelect").value;
+      const gpu = document.getElementById("gpuSelect").value;
+
+      users[currentUser] = {
+        ram: ram + "MB",
+        cpu: cpu + " Core(s)",
+        gpu: gpu,
+        status: "🟢 Approved by Admin"
+      };
+
+      document.getElementById("access-status").innerText = "✅ Access Granted!";
+      setUserPanel(users[currentUser]);
+    }
+
+    function setUserPanel(data) {
+      document.getElementById("uRAM").innerText = data.ram;
+      document.getElementById("uCPU").innerText = data.cpu;
+      document.getElementById("uGPU").innerText = data.gpu;
+      document.getElementById("uStatus").innerText = data.status;
+    }
+  </script>
+</body>
+</html>
