@@ -1,230 +1,132 @@
 <!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>TypePanelX – Full Access Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>TypePanelX – Full System</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #0f1117;
-      color: white;
-      padding: 20px;
-    }
-    .panel {
-      max-width: 900px;
-      margin: auto;
-      background-color: #161b22;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.6);
-      margin-bottom: 30px;
-    }
-    h2 {
-      margin-bottom: 10px;
-      color: #58a6ff;
-    }
-    input, select, button, textarea {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      border: none;
-      background-color: #21262d;
-      color: white;
-    }
-    button {
-      background-color: #238636;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover { background-color: #2ea043; }
-    .card {
-      background-color: #1c2129;
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 10px;
-      border-left: 4px solid #58a6ff;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    body { background: #0e1117; color: #e6edf3; padding: 24px; }
+    .panel { max-width: 900px; margin: auto; background: #161b22; padding: 30px; border-radius: 10px; box-shadow: 0 0 15px #0005; margin-top: 30px; }
+    h2, h3 { color: #58a6ff; margin-bottom: 18px; }
+    label { display: block; margin-top: 10px; font-size: 14px; color: #b3b3b3; }
+    input, select, button { width: 100%; padding: 10px 14px; margin-top: 6px; margin-bottom: 12px; border: none; border-radius: 6px; font-size: 14px; }
+    input, select { background: #0d1117; color: #e6edf3; border: 1px solid #30363d; }
+    button { background: #238636; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+    button:hover { background: #2ea043; }
+    .switch-link { background: transparent; color: #58a6ff; border: none; cursor: pointer; font-size: 13px; text-decoration: underline; }
     .hidden { display: none; }
-    .status { font-size: 14px; margin-top: 5px; }
-    .password-toggle {
-      position: relative;
-    }
-    .password-toggle input {
-      padding-right: 40px;
-    }
-    .toggle-icon {
-      position: absolute;
-      top: 50%;
-      right: 10px;
-      transform: translateY(-50%);
-      cursor: pointer;
-      font-size: 16px;
-      color: #ccc;
-    }
+    .card { background: #1f242d; padding: 16px; margin-top: 14px; border-left: 4px solid #58a6ff; border-radius: 6px; }
+    .row { display: flex; gap: 20px; }
   </style>
 </head>
-<body>  <div class="panel" id="registerPanel">
-    <h2>Create New Account</h2>
-    <input type="text" id="regUser" placeholder="Username">
-    <input type="email" id="regEmail" placeholder="Email">
-    <div class="password-toggle">
-      <input type="password" id="regPass" placeholder="Password">
-      <span class="toggle-icon" onclick="togglePassword('regPass')">👁</span>
-    </div>
-    <button onclick="registerUser()">Register</button>
-  </div>  <div class="panel" id="loginPanel">
-    <h2>Login to Continue</h2>
-    <input type="text" id="loginUser" placeholder="Username">
-    <div class="password-toggle">
-      <input type="password" id="loginPass" placeholder="Password">
-      <span class="toggle-icon" onclick="togglePassword('loginPass')">👁</span>
-    </div>
+<body>  <!-- LOGIN PANEL -->  <div class="panel" id="loginPanel">
+    <h2>Login</h2>
+    <label>Username</label>
+    <input id="loginUser" type="text" />
+    <label>Password</label>
+    <input id="loginPass" type="password" />
     <button onclick="loginUser()">Login</button>
-    <p id="loginMsg" style="color: red; font-size: 14px;"></p>
-  </div>  <div class="panel hidden" id="adminPanel">
-    <h2>Admin Panel – Assign Resources</h2>
-    <select id="userList"></select>
-    <input type="number" id="ramAmt" placeholder="RAM in MB">
-    <select id="cpuCount">
-      <option value="1">1 CPU</option>
-      <option value="2">2 CPU</option>
-      <option value="4">4 CPU</option>
-    </select>
-    <select id="gpuOption">
-      <option>None</option>
-      <option>GTX 1050</option>
-      <option>RTX 2060</option>
-    </select>
-    <button onclick="assignAccess()">Assign</button><h3 style="margin-top: 20px">Create User Manually</h3>
-<input type="text" id="newUser" placeholder="Username">
-<input type="email" id="newEmail" placeholder="Email">
-<input type="password" id="newPass" placeholder="Password">
-<button onclick="createNewUser()">Add User</button>
-
-<div id="adminDetails"></div>
-
-  </div>  <div class="panel hidden" id="userPanel">
-    <h2>User Control Panel</h2>
+    <button class="switch-link" onclick="switchTo('register')">New user? Register</button>
+    <p id="loginMsg" style="color:#f85149;font-size:14px"></p>
+  </div>  <!-- REGISTER PANEL -->  <div class="panel hidden" id="registerPanel">
+    <h2>Register</h2>
+    <label>Username</label>
+    <input id="regUser" type="text" />
+    <label>Email</label>
+    <input id="regEmail" type="email" />
+    <label>Password</label>
+    <input id="regPass" type="password" />
+    <button onclick="registerUser()">Register</button>
+    <button class="switch-link" onclick="switchTo('login')">Already registered? Login</button>
+  </div>  <!-- USER PANEL -->  <div class="panel hidden" id="userPanel">
+    <h2>Your Panel</h2>
     <div id="userInfo"></div>
-    <div class="status">Bot Status: <span id="botStatus">Idle</span></div>
-    <button onclick="simulateBot()">Activate Bot</button>
+    <p>Status: <span id="botStatus">Idle</span></p>
+    <button onclick="runBot()">Run Bot</button>
+    <button onclick="logout()">Logout</button>
+  </div>  <!-- ADMIN PANEL -->  <div class="panel hidden" id="adminPanel">
+    <h2>Admin Control Panel</h2>
+    <div id="adminUsers"></div>
+    <button onclick="logout()">Logout</button>
   </div>  <script>
-    let users = [
-      { username: 'admin', email: 'admin@panel.com', password: 'admin786', isAdmin: true },
-      { username: 'varun1', email: 'v1@example.com', password: '123456', ram: null, cpu: null, gpu: null },
-      { username: 'varun2', email: 'v2@example.com', password: '789456', ram: null, cpu: null, gpu: null }
+    const qs = id => document.getElementById(id);
+
+    const users = [
+      { username: 'admin', email: 'admin@x.com', password: 'admin786', isAdmin: true },
     ];
 
-    function togglePassword(id) {
-      const input = document.getElementById(id);
-      if (input.type === 'password') {
-        input.type = 'text';
-      } else {
-        input.type = 'password';
-      }
+    function switchTo(type) {
+      qs('loginPanel').classList.add('hidden');
+      qs('registerPanel').classList.add('hidden');
+      qs(type + 'Panel').classList.remove('hidden');
     }
 
     function registerUser() {
-      const u = document.getElementById('regUser').value;
-      const e = document.getElementById('regEmail').value;
-      const p = document.getElementById('regPass').value;
-      if (!u || !e || !p) return alert("All fields are required");
+      const u = qs('regUser').value.trim(), e = qs('regEmail').value.trim(), p = qs('regPass').value.trim();
+      if (!u || !e || !p) return alert("Please fill all fields");
+      if (users.find(x => x.username === u)) return alert("User exists");
       users.push({ username: u, email: e, password: p, ram: null, cpu: null, gpu: null });
-      alert("Registered successfully. Now logged in.");
       localStorage.setItem('loggedUser', u);
-      loginUserAuto(u);
+      loadPanel(users.find(x => x.username === u));
     }
 
     function loginUser() {
-      const u = document.getElementById('loginUser').value;
-      const p = document.getElementById('loginPass').value;
+      const u = qs('loginUser').value.trim(), p = qs('loginPass').value.trim();
       const user = users.find(x => x.username === u && x.password === p);
-      if (!user) return document.getElementById('loginMsg').innerText = "Wrong credentials";
+      if (!user) return qs('loginMsg').innerText = 'Invalid credentials';
       localStorage.setItem('loggedUser', u);
-      loadPanel(user);
-    }
-
-    function loginUserAuto(u) {
-      const user = users.find(x => x.username === u);
-      if (!user) return;
       loadPanel(user);
     }
 
     function loadPanel(user) {
-      document.getElementById('loginPanel').classList.add('hidden');
-      document.getElementById('registerPanel').classList.add('hidden');
       if (user.isAdmin) {
-        document.getElementById('adminPanel').classList.remove('hidden');
-        updateUserList();
+        updateAdmin();
+        show('adminPanel');
       } else {
-        document.getElementById('userPanel').classList.remove('hidden');
-        document.getElementById('userInfo').innerHTML = `
-          <div class='card'>
-            Username: ${user.username}<br>
-            Email: ${user.email}<br>
-            RAM: ${user.ram || 'N/A'}<br>
-            CPU: ${user.cpu || 'N/A'}<br>
-            GPU: ${user.gpu || 'N/A'}<br>
-          </div>`;
+        updateUser(user);
+        show('userPanel');
       }
     }
 
-    function updateUserList() {
-      document.getElementById('userList').innerHTML = '';
-      document.getElementById('adminDetails').innerHTML = '';
-      users.filter(u => !u.isAdmin).forEach(u => {
-        const opt = document.createElement('option');
-        opt.value = u.username;
-        opt.innerText = u.username;
-        document.getElementById('userList').appendChild(opt);
+    function show(id) {
+      ['loginPanel','registerPanel','adminPanel','userPanel'].forEach(p => qs(p).classList.add('hidden'));
+      qs(id).classList.remove('hidden');
+    }
 
+    function updateUser(u) {
+      qs('userInfo').innerHTML = `<div class='card'>Username: ${u.username}<br>Email: ${u.email}<br>RAM: ${u.ram||'N/A'}<br>CPU: ${u.cpu||'N/A'}<br>GPU: ${u.gpu||'N/A'}</div>`;
+    }
+
+    function updateAdmin() {
+      const container = qs('adminUsers');
+      container.innerHTML = '';
+      users.filter(u => !u.isAdmin).forEach(u => {
         const div = document.createElement('div');
         div.className = 'card';
-        div.innerHTML = `User: ${u.username}<br>Email: ${u.email}<br>Password: ${u.password}<br>RAM: ${u.ram || 'N/A'} | CPU: ${u.cpu || 'N/A'} | GPU: ${u.gpu || 'N/A'}`;
-        document.getElementById('adminDetails').appendChild(div);
+        div.innerHTML = `User: ${u.username}<br>Email: ${u.email}<br>Password: ${u.password}`;
+        container.appendChild(div);
       });
     }
 
-    function assignAccess() {
-      const uname = document.getElementById('userList').value;
-      const ram = document.getElementById('ramAmt').value;
-      const cpu = document.getElementById('cpuCount').value;
-      const gpu = document.getElementById('gpuOption').value;
-      const target = users.find(x => x.username === uname);
-      if (!target) return;
-      target.ram = ram + ' MB';
-      target.cpu = cpu;
-      target.gpu = gpu;
-      alert("Access updated successfully.");
-      updateUserList();
+    function runBot() {
+      qs('botStatus').innerText = 'Running...';
+      setTimeout(() => qs('botStatus').innerText = 'Idle', 4000);
     }
 
-    function createNewUser() {
-      const n = document.getElementById('newUser').value;
-      const e = document.getElementById('newEmail').value;
-      const p = document.getElementById('newPass').value;
-      if (!n || !e || !p) return alert("All fields required");
-      users.push({ username: n, email: e, password: p, ram: null, cpu: null, gpu: null });
-      alert("User created successfully.");
-      updateUserList();
+    function logout() {
+      localStorage.removeItem('loggedUser');
+      switchTo('login');
     }
 
-    function simulateBot() {
-      const status = document.getElementById('botStatus');
-      status.innerText = "Running...";
-      setTimeout(() => {
-        status.innerText = "Idle";
-      }, 4000);
-    }
-
-    window.onload = function() {
-      const loggedUser = localStorage.getItem('loggedUser');
-      if (loggedUser) loginUserAuto(loggedUser);
+    window.onload = () => {
+      const saved = localStorage.getItem('loggedUser');
+      if (saved) {
+        const u = users.find(x => x.username === saved);
+        if (u) loadPanel(u);
+        else switchTo('login');
+      } else {
+        switchTo('login');
+      }
     }
   </script></body>
 </html>
