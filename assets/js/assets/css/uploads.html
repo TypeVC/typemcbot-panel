@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>File Upload</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <div class="panel">
+    <h2>Upload your files</h2>
+    <input type="file" id="file-uploader" />
+    <p id="file-name">No file selected.</p>
+    <script>
+      document.getElementById("file-uploader").addEventListener("change", function() {
+        const file = this.files[0];
+        document.getElementById("file-name").innerText = file ? `📂 ${file.name}` : "No file selected.";
+      });
+    </script>
+  </div>
+</body>
+</html>
