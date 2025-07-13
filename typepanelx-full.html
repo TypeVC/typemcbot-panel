@@ -1,101 +1,132 @@
 <!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>TypePanelX – Minimal Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>TypePanelX – Full System</title>
   <style>
-    /* ===== BASIC RESET ===== */
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
-    body{background:#0e1117;color:#e6edf3;padding:24px}
-    /* ===== LAYOUT ===== */
-    .panel{max-width:860px;margin:auto;background:#161b22;padding:24px;border-radius:8px;box-shadow:0 0 18px #0003;margin-bottom:28px}
-    h2{margin-bottom:12px;color:#58a6ff;font-weight:600}
-    input,select,button{width:100%;padding:11px 14px;margin-top:10px;margin-bottom:16px;border:1px solid #30363d;border-radius:6px;background:#0d1117;color:#e6edf3;font-size:15px}
-    button{background:#238636;border:none;font-weight:600;cursor:pointer;transition:.3s}
-    button:hover{background:#2ea043}
-    .hidden{display:none}
-    .card{background:#1c2129;padding:14px;border-radius:6px;margin-top:12px;border-left:4px solid #58a6ff;font-size:14px}
-    .status{font-size:14px;margin-top:8px}
-    label{font-size:14px;margin-top:4px;display:block;color:#8b949e}
-    /* keeps header fixed */
-    .sticky-header{position:sticky;top:0;z-index:10;background:#0e1117;padding-bottom:20px}
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    body { background: #0e1117; color: #e6edf3; padding: 24px; }
+    .panel { max-width: 900px; margin: auto; background: #161b22; padding: 30px; border-radius: 10px; box-shadow: 0 0 15px #0005; margin-top: 30px; }
+    h2, h3 { color: #58a6ff; margin-bottom: 18px; }
+    label { display: block; margin-top: 10px; font-size: 14px; color: #b3b3b3; }
+    input, select, button { width: 100%; padding: 10px 14px; margin-top: 6px; margin-bottom: 12px; border: none; border-radius: 6px; font-size: 14px; }
+    input, select { background: #0d1117; color: #e6edf3; border: 1px solid #30363d; }
+    button { background: #238636; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+    button:hover { background: #2ea043; }
+    .switch-link { background: transparent; color: #58a6ff; border: none; cursor: pointer; font-size: 13px; text-decoration: underline; }
+    .hidden { display: none; }
+    .card { background: #1f242d; padding: 16px; margin-top: 14px; border-left: 4px solid #58a6ff; border-radius: 6px; }
+    .row { display: flex; gap: 20px; }
   </style>
 </head>
-<body>
-  <header class="sticky-header">
-    <div class="panel" style="margin-bottom:0">
-      <h2>TypePanelX Dashboard</h2>
-    </div>
-  </header>  <!-- REGISTRATION -->  <div class="panel" id="registerPanel">
-    <h3>Create Account</h3>
-    <label for="regUser">Username</label>
-    <input id="regUser" type="text" placeholder="e.g. player01"/>
-    <label for="regEmail">Email</label>
-    <input id="regEmail" type="email" placeholder="example@mail.com"/>
-    <label for="regPass">Password</label>
-    <input id="regPass" type="password" placeholder="********"/>
-    <button onclick="registerUser()">Register</button>
-  </div>  <!-- LOGIN -->  <div class="panel" id="loginPanel">
-    <h3>Login</h3>
-    <label for="loginUser">Username</label>
-    <input id="loginUser" type="text"/>
-    <label for="loginPass">Password</label>
-    <input id="loginPass" type="password"/>
+<body>  <!-- LOGIN PANEL -->  <div class="panel" id="loginPanel">
+    <h2>Login</h2>
+    <label>Username</label>
+    <input id="loginUser" type="text" />
+    <label>Password</label>
+    <input id="loginPass" type="password" />
     <button onclick="loginUser()">Login</button>
+    <button class="switch-link" onclick="switchTo('register')">New user? Register</button>
     <p id="loginMsg" style="color:#f85149;font-size:14px"></p>
-  </div>  <!-- ADMIN PANEL -->  <div class="panel hidden" id="adminPanel">
-    <h3>Admin – Resource Assignment</h3>
-    <select id="userList"></select>
-    <label>RAM (MB)</label>
-    <input id="ramAmt" type="number" min="256" placeholder="2048"/>
-    <label>CPU Cores</label>
-    <select id="cpuCount"><option>1</option><option>2</option><option>4</option></select>
-    <label>GPU Model</label>
-    <select id="gpuOption"><option>None</option><option>GTX 1050</option><option>RTX 2060</option></select>
-    <button onclick="assignAccess()">Assign Resources</button><h4 style="margin-top:20px">Quick Add User</h4>
-<input id="newUser" placeholder="Username"/>
-<input id="newEmail" placeholder="Email"/>
-<input id="newPass" type="password" placeholder="Password"/>
-<button onclick="createNewUser()">Add User</button>
-
-<div id="adminDetails" style="margin-top:20px"></div>
-
+  </div>  <!-- REGISTER PANEL -->  <div class="panel hidden" id="registerPanel">
+    <h2>Register</h2>
+    <label>Username</label>
+    <input id="regUser" type="text" />
+    <label>Email</label>
+    <input id="regEmail" type="email" />
+    <label>Password</label>
+    <input id="regPass" type="password" />
+    <button onclick="registerUser()">Register</button>
+    <button class="switch-link" onclick="switchTo('login')">Already registered? Login</button>
   </div>  <!-- USER PANEL -->  <div class="panel hidden" id="userPanel">
-    <h3>Your Profile</h3>
+    <h2>Your Panel</h2>
     <div id="userInfo"></div>
-    <div class="status">Bot Status: <span id="botStatus">Idle</span></div>
-    <button onclick="simulateBot()">Run Bot</button>
+    <p>Status: <span id="botStatus">Idle</span></p>
+    <button onclick="runBot()">Run Bot</button>
+    <button onclick="logout()">Logout</button>
+  </div>  <!-- ADMIN PANEL -->  <div class="panel hidden" id="adminPanel">
+    <h2>Admin Control Panel</h2>
+    <div id="adminUsers"></div>
+    <button onclick="logout()">Logout</button>
   </div>  <script>
-    // ===== BASIC DATA STORAGE =====
-    const users=[{username:'admin',email:'admin@panel.com',password:'admin786',isAdmin:true},{username:'varun1',email:'v1@mail.com',password:'123456',ram:null,cpu:null,gpu:null}];
+    const qs = id => document.getElementById(id);
 
-    // ===== UTIL =====
-    const qs=id=>document.getElementById(id);
+    const users = [
+      { username: 'admin', email: 'admin@x.com', password: 'admin786', isAdmin: true },
+    ];
 
-    function showPanel(id){['registerPanel','loginPanel','adminPanel','userPanel'].forEach(p=>qs(p).classList.add('hidden'));qs(id).classList.remove('hidden');}
+    function switchTo(type) {
+      qs('loginPanel').classList.add('hidden');
+      qs('registerPanel').classList.add('hidden');
+      qs(type + 'Panel').classList.remove('hidden');
+    }
 
-    // ===== REGISTER =====
-    function registerUser(){const u=qs('regUser').value.trim(),e=qs('regEmail').value.trim(),p=qs('regPass').value.trim();if(!u||!e||!p)return alert('Fill all fields');if(users.find(x=>x.username===u))return alert('User exists');users.push({username:u,email:e,password:p,ram:null,cpu:null,gpu:null});localStorage.setItem('loggedUser',u);loadPanel(users.find(x=>x.username===u));}
+    function registerUser() {
+      const u = qs('regUser').value.trim(), e = qs('regEmail').value.trim(), p = qs('regPass').value.trim();
+      if (!u || !e || !p) return alert("Please fill all fields");
+      if (users.find(x => x.username === u)) return alert("User exists");
+      users.push({ username: u, email: e, password: p, ram: null, cpu: null, gpu: null });
+      localStorage.setItem('loggedUser', u);
+      loadPanel(users.find(x => x.username === u));
+    }
 
-    // ===== LOGIN =====
-    function loginUser(){const u=qs('loginUser').value.trim(),p=qs('loginPass').value.trim();const user=users.find(x=>x.username===u&&x.password===p);if(!user){qs('loginMsg').innerText='Invalid credentials';return;}localStorage.setItem('loggedUser',u);loadPanel(user);}
+    function loginUser() {
+      const u = qs('loginUser').value.trim(), p = qs('loginPass').value.trim();
+      const user = users.find(x => x.username === u && x.password === p);
+      if (!user) return qs('loginMsg').innerText = 'Invalid credentials';
+      localStorage.setItem('loggedUser', u);
+      loadPanel(user);
+    }
 
-    function loadPanel(user){if(user.isAdmin){updateAdmin();showPanel('adminPanel');}else{updateUser(user);showPanel('userPanel');}}
+    function loadPanel(user) {
+      if (user.isAdmin) {
+        updateAdmin();
+        show('adminPanel');
+      } else {
+        updateUser(user);
+        show('userPanel');
+      }
+    }
 
-    // ===== ADMIN FUNCTIONS =====
-    function updateAdmin(){qs('userList').innerHTML='';qs('adminDetails').innerHTML='';users.filter(u=>!u.isAdmin).forEach(u=>{const opt=document.createElement('option');opt.value=u.username;opt.textContent=u.username;qs('userList').appendChild(opt);const card=document.createElement('div');card.className='card';card.innerHTML=`User: ${u.username}<br>Email: ${u.email}<br>Password: ${u.password}<br>RAM: ${u.ram||'N/A'} | CPU: ${u.cpu||'N/A'} | GPU: ${u.gpu||'N/A'}`;qs('adminDetails').appendChild(card);});}
+    function show(id) {
+      ['loginPanel','registerPanel','adminPanel','userPanel'].forEach(p => qs(p).classList.add('hidden'));
+      qs(id).classList.remove('hidden');
+    }
 
-    function assignAccess(){const uname=qs('userList').value,target=users.find(x=>x.username===uname);if(!target)return;target.ram=qs('ramAmt').value+' MB';target.cpu=qs('cpuCount').value;target.gpu=qs('gpuOption').value;updateAdmin();alert('Resources updated');}
+    function updateUser(u) {
+      qs('userInfo').innerHTML = `<div class='card'>Username: ${u.username}<br>Email: ${u.email}<br>RAM: ${u.ram||'N/A'}<br>CPU: ${u.cpu||'N/A'}<br>GPU: ${u.gpu||'N/A'}</div>`;
+    }
 
-    function createNewUser(){const n=qs('newUser').value.trim(),e=qs('newEmail').value.trim(),p=qs('newPass').value.trim();if(!n||!e||!p)return alert('Fill all fields');if(users.find(x=>x.username===n))return alert('User exists');users.push({username:n,email:e,password:p,ram:null,cpu:null,gpu:null});updateAdmin();alert('User added');}
+    function updateAdmin() {
+      const container = qs('adminUsers');
+      container.innerHTML = '';
+      users.filter(u => !u.isAdmin).forEach(u => {
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `User: ${u.username}<br>Email: ${u.email}<br>Password: ${u.password}`;
+        container.appendChild(div);
+      });
+    }
 
-    // ===== USER FUNCTIONS =====
-    function updateUser(u){qs('userInfo').innerHTML=`<div class='card'>Username: ${u.username}<br>Email: ${u.email}<br>RAM: ${u.ram||'N/A'}<br>CPU: ${u.cpu||'N/A'}<br>GPU: ${u.gpu||'N/A'}</div>`;}
+    function runBot() {
+      qs('botStatus').innerText = 'Running...';
+      setTimeout(() => qs('botStatus').innerText = 'Idle', 4000);
+    }
 
-    function simulateBot(){qs('botStatus').innerText='Running';setTimeout(()=>qs('botStatus').innerText='Idle',4000);}
+    function logout() {
+      localStorage.removeItem('loggedUser');
+      switchTo('login');
+    }
 
-    // ===== AUTO-LOGIN =====
-    window.onload=()=>{const saved=localStorage.getItem('loggedUser');if(saved){const u=users.find(x=>x.username===saved);if(u)loadPanel(u);}else showPanel('registerPanel');};
+    window.onload = () => {
+      const saved = localStorage.getItem('loggedUser');
+      if (saved) {
+        const u = users.find(x => x.username === saved);
+        if (u) loadPanel(u);
+        else switchTo('login');
+      } else {
+        switchTo('login');
+      }
+    }
   </script></body>
 </html>
