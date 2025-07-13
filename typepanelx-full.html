@@ -1,0 +1,200 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TypePanelX – Full Access Control Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0f1117;
+      color: white;
+      padding: 20px;
+    }
+    .panel {
+      max-width: 900px;
+      margin: auto;
+      background-color: #161b22;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+      margin-bottom: 30px;
+    }
+    h2 {
+      margin-bottom: 10px;
+      color: #58a6ff;
+    }
+    input, select, button, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: none;
+      background-color: #21262d;
+      color: white;
+    }
+    button {
+      background-color: #238636;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover { background-color: #2ea043; }
+    .card {
+      background-color: #1c2129;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 10px;
+      border-left: 4px solid #58a6ff;
+    }
+    .hidden { display: none; }
+    .status { font-size: 14px; margin-top: 5px; }
+  </style>
+</head>
+<body>  <div class="panel" id="registerPanel">
+    <h2>User Registration</h2>
+    <input type="text" id="regUser" placeholder="Username">
+    <input type="email" id="regEmail" placeholder="Email">
+    <input type="password" id="regPass" placeholder="Password">
+    <button onclick="registerUser()">Register</button>
+  </div>  <div class="panel" id="loginPanel">
+    <h2>Login</h2>
+    <input type="text" id="loginUser" placeholder="Username">
+    <input type="password" id="loginPass" placeholder="Password">
+    <button onclick="loginUser()">Login</button>
+    <p id="loginMsg"></p>
+  </div>  <div class="panel hidden" id="adminPanel">
+    <h2>Admin Panel – Assign Access + System View</h2>
+    <select id="userList"></select>
+    <input type="number" id="ramAmt" placeholder="RAM in MB">
+    <select id="cpuCount">
+      <option value="1">1 CPU</option>
+      <option value="2">2 CPU</option>
+      <option value="4">4 CPU</option>
+    </select>
+    <select id="gpuOption">
+      <option>None</option>
+      <option>GTX 1050</option>
+      <option>RTX 2060</option>
+    </select>
+    <button onclick="assignAccess()">Assign</button><h3 style="margin-top: 20px">Create New User</h3>
+<input type="text" id="newUser" placeholder="New Username">
+<input type="email" id="newEmail" placeholder="Email">
+<input type="password" id="newPass" placeholder="Password">
+<button onclick="createNewUser()">Add User</button>
+
+<div id="adminDetails"></div>
+
+  </div>  <div class="panel hidden" id="userPanel">
+    <h2>User Control Panel</h2>
+    <div id="userInfo"></div>
+    <div class="status">Bot Status: <span id="botStatus">Idle</span></div>
+    <button onclick="simulateBot()">Activate Bot</button>
+  </div>  <script>
+    let users = [
+      { username: 'admin', email: 'admin@panel.com', password: 'admin786', isAdmin: true },
+      { username: 'varun1', email: 'v1@example.com', password: '123456', ram: null, cpu: null, gpu: null },
+      { username: 'varun2', email: 'v2@example.com', password: '789456', ram: null, cpu: null, gpu: null }
+    ];
+
+    function registerUser() {
+      const u = document.getElementById('regUser').value;
+      const e = document.getElementById('regEmail').value;
+      const p = document.getElementById('regPass').value;
+      if (!u || !e || !p) return alert("All fields required");
+      users.push({ username: u, email: e, password: p, ram: null, cpu: null, gpu: null });
+      alert("Registered and logged in");
+      localStorage.setItem('loggedUser', u);
+      loginUserAuto(u);
+    }
+
+    function loginUser() {
+      const u = document.getElementById('loginUser').value;
+      const p = document.getElementById('loginPass').value;
+      const user = users.find(x => x.username === u && x.password === p);
+      if (!user) return document.getElementById('loginMsg').innerText = "Wrong credentials";
+      localStorage.setItem('loggedUser', u);
+      loadPanel(user);
+    }
+
+    function loginUserAuto(u) {
+      const user = users.find(x => x.username === u);
+      if (!user) return;
+      loadPanel(user);
+    }
+
+    function loadPanel(user) {
+      document.getElementById('loginPanel').classList.add('hidden');
+      document.getElementById('registerPanel').classList.add('hidden');
+      if (user.isAdmin) {
+        document.getElementById('adminPanel').classList.remove('hidden');
+        updateUserList();
+      } else {
+        document.getElementById('userPanel').classList.remove('hidden');
+        document.getElementById('userInfo').innerHTML = `
+          <div class='card'>
+            Username: ${user.username}<br>
+            Email: ${user.email}<br>
+            RAM: ${user.ram || 'N/A'}<br>
+            CPU: ${user.cpu || 'N/A'}<br>
+            GPU: ${user.gpu || 'N/A'}<br>
+          </div>`;
+      }
+    }
+
+    function updateUserList() {
+      document.getElementById('userList').innerHTML = '';
+      document.getElementById('adminDetails').innerHTML = '';
+      users.filter(u => !u.isAdmin).forEach(u => {
+        const opt = document.createElement('option');
+        opt.value = u.username;
+        opt.innerText = u.username;
+        document.getElementById('userList').appendChild(opt);
+
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `User: ${u.username}<br>Email: ${u.email}<br>Password: ${u.password}<br>RAM: ${u.ram || 'N/A'} | CPU: ${u.cpu || 'N/A'} | GPU: ${u.gpu || 'N/A'}`;
+        document.getElementById('adminDetails').appendChild(div);
+      });
+    }
+
+    function assignAccess() {
+      const uname = document.getElementById('userList').value;
+      const ram = document.getElementById('ramAmt').value;
+      const cpu = document.getElementById('cpuCount').value;
+      const gpu = document.getElementById('gpuOption').value;
+      const target = users.find(x => x.username === uname);
+      if (!target) return;
+      target.ram = ram + ' MB';
+      target.cpu = cpu;
+      target.gpu = gpu;
+      alert("Access Updated");
+      updateUserList();
+    }
+
+    function createNewUser() {
+      const n = document.getElementById('newUser').value;
+      const e = document.getElementById('newEmail').value;
+      const p = document.getElementById('newPass').value;
+      if (!n || !e || !p) return alert("All fields required");
+      users.push({ username: n, email: e, password: p, ram: null, cpu: null, gpu: null });
+      alert("User created successfully");
+      updateUserList();
+    }
+
+    function simulateBot() {
+      const status = document.getElementById('botStatus');
+      status.innerText = "Running...";
+      setTimeout(() => {
+        status.innerText = "Idle";
+      }, 4000);
+    }
+
+    window.onload = function() {
+      const loggedUser = localStorage.getItem('loggedUser');
+      if (loggedUser) loginUserAuto(loggedUser);
+    }
+  </script></body>
+</html>
