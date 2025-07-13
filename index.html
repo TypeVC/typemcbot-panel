@@ -1,19 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login - TypeMCBot Panel</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
+  <meta charset="UTF-8">
+  <title>TypeMCBot Control Panel</title>
+  <style>
+    /* assets/css/style.css */
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #0d1117;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .login-box, .admin-panel, .user-list {
+      max-width: 900px;
+      margin: auto;
+      background: #161b22;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px black;
+      margin-bottom: 20px;
+    }
+    h1, h2 {
+      color: #58a6ff;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background: #21262d;
+      color: white;
+      border: none;
+      border-radius: 6px;
+    }
+    button {
+      background-color: #238636;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #2ea043;
+    }
+    .user-card {
+      background: #21262d;
+      margin-top: 10px;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #30363d;
+    }
+    .section {
+      margin-top: 20px;
+    }
+    .approved {
+      color: #2ea043;
+    }
+    .pending {
+      color: #f85149;
+    }
+  </style>
 </head>
 <body>
+
   <div class="login-box">
-    <h1>TypeMCBot Panel</h1>
-    <input type="text" id="login-username" placeholder="Username" />
-    <input type="password" id="login-password" placeholder="Password" />
+    <h1>🔐 Login to TypeMCBot Panel</h1>
+    <input type="text" id="loginUser" placeholder="Username">
+    <input type="password" id="loginPass" placeholder="Password">
     <button onclick="login()">Login</button>
-    <p id="login-message"></p>
+    <p id="loginMsg"></p>
   </div>
-  <script src="assets/js/login.js"></script>
+
+  <div class="admin-panel" style="display:none;" id="adminPanel">
+    <h2>🛡️ Admin Panel – Assign Resources</h2>
+    <select id="userSelect"></select>
+
+    <div class="section">
+      <label>💾 RAM (MB):</label>
+      <input type="range" id="ramInput" min="256" max="8192" value="2048" oninput="updateRAMDisplay()">
+      <p>Value: <span id="ramVal">2048MB</span></p>
+
+      <label>🧠 CPU Cores:</label>
+      <select id="cpuSelect">
+        <option value="1">1 Core</option>
+        <option value="2" selected>2 Cores</option>
+        <option value="4">4 Cores</option>
+        <option value="8">8 Cores</option>
+      </select>
+
+      <label>🎮 GPU:</label>
+      <select id="gpuSelect">
+        <option>❌ No GPU</option>
+        <option>NVIDIA GTX 1650</option>
+        <option>NVIDIA RTX 3060</option>
+        <option>NVIDIA RTX 4090</option>
+      </select>
+
+      <button onclick="assignResources()">✅ Assign to User</button>
+    </div>
+  </div>
+
+  <div class="user-list" id="userList" style="display:none;">
+    <h2>👥 All Users & Resource Status</h2>
+    <div id="userCards"></div>
+  </div>
+
+  <script>
+    // assets/js/fullLogic.js
+    let users = [
+      { username: "varun", email: "varun@example.com", ram: null, cpu: null, gpu: null, approved: false },
+      { username: "dhruv", email: "dhruv@example.com", ram: null, cpu: null, gpu: null, approved: false },
+      { username: "admin", email: "admin@panel.com", isAdmin: true, password: "tYpE@Mcb0T#Panel$786" }
+    ];
+
+    function login() {
+      const username = document.getElementById("loginUser").value;
+      const password = document.getElementById("loginPass").value;
+      const user = users.find(u => u.username === username);
+
+      if (!user) {
+        return document.getElementById("loginMsg").innerText = "❌ User not found!";
+      }
+
+      if (user.isAdmin && password === user.password) {
+        document.getElementById("loginMsg").innerText = "✅ Admin Logged In!";
+        document.getElementById("adminPanel").style.display = "block";
+        document.getElementById("userList").style.display = "block";
+        updateUserDropdown();
+        renderUserCards();
+      } else if (!user.isAdmin) {
+        document.getElementById("loginMsg").innerText = `👋 Welcome, ${user.username}`;
+        document.getElementById("userList").style.display = "block";
+        renderUserCards(user.username);
+      } else {
+        document.getElementById("loginMsg").innerText = "❌ Wrong password.";
+      }
+    }
+
+    function updateUserDropdown() {
+      const select = document.getElementById("userSelect");
+      select.innerHTML = "";
+      users.filter(u => !u.isAdmin).forEach(user => {
+        const opt = document.createElement("option");
+        opt.value = user.username;
+        opt.innerText = `${user.username} (${user.email})`;
+        select.appendChild(opt);
+      });
+    }
+
+    function updateRAMDisplay() {
+      const val = document.getElementById("ramInput").value;
+      document.getElementById("ramVal").innerText = `${val}MB`;
+    }
+
+    function assignResources() {
+      const selected = document.getElementById("userSelect").value;
+      const ram = document.getElementById("ramInput").value;
+      const cpu = document.getElementById("cpuSelect").value;
+      const gpu = document.getElementById("gpuSelect").value;
+
+      const user = users.find(u => u.username === selected);
+      if (user) {
+        user.ram = ram + "MB";
+        user.cpu = cpu + " Core(s)";
+        user.gpu = gpu;
+        user.approved = true;
+        renderUserCards();
+        alert(`✅ Access assigned to ${user.username}`);
+      }
+    }
+
+    function renderUserCards(filterUser = null) {
+      const container = document.getElementById("userCards");
+      container.innerHTML = "";
+
+      users.filter(u => !u.isAdmin).forEach(user => {
+        if (filterUser && user.username !== filterUser) return;
+
+        const card = document.createElement("div");
+        card.className = "user-card";
+
+        card.innerHTML = `
+          <strong>👤 Username:</strong> ${user.username}<br>
+          <strong>📧 Email:</strong> ${user.email}<br>
+          <strong>💾 RAM:</strong> ${user.ram || "Not Assigned"}<br>
+          <strong>🧠 CPU:</strong> ${user.cpu || "Not Assigned"}<br>
+          <strong>🎮 GPU:</strong> ${user.gpu || "Not Assigned"}<br>
+          <strong>Status:</strong> <span class="${user.approved ? 'approved' : 'pending'}">
+            ${user.approved ? "🟢 Approved" : "🔴 Pending"}
+          </span>
+        `;
+        container.appendChild(card);
+      });
+    }
+  </script>
 </body>
 </html>
