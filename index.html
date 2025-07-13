@@ -3,22 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TypeMCBot Panel</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Login - TypeMCBot Panel</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
-  <div class="panel">
-    <h1>Welcome to TypeMCBot Panel</h1>
-    <p>This is your central hub to manage and view bot activity.</p>
-
-    <div class="buttons">
-      <button onclick="showBotInfo()">View Bot Status</button>
-      <button onclick="showCommands()">Command List</button>
-    </div>
-
-    <div id="output"></div>
+  <div class="login-box">
+    <h1>TypeMCBot Panel</h1>
+    <input type="text" id="login-username" placeholder="Username" />
+    <input type="password" id="login-password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <p id="login-message"></p>
   </div>
-
-  <script src="script.js"></script>
+  <script src="assets/js/login.js"></script>
 </body>
 </html>
